@@ -35,4 +35,21 @@ jobs:
       # ✅✅✅ 关键修复点：先生成“小写 tag”
       - name: Generate lowercase image tag
         run: |
-          IMAGE_TAG=$(echo ghcr.io/${GITHUB_REPOSITORY_OWNER}/yxpm:0410 | tr '[:upper:]' '[:lower:]')_
+          IMAGE_TAG=$(echo ghcr.io/${GITHUB_REPOSITORY_OWNER}/yxpm:0410 | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+      # ✅✅✅ 这里不再使用 tr，只使用变量
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.IMAGE_TAG }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.description=HTTP Server
+            org.opencontainers.image.licenses=MIT
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
