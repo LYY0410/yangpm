@@ -32,17 +32,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          platforms: linux/amd64,linux/arm64
-          tags: |
-            ghcr.io/${GITHUB_REPOSITORY_OWNER}/yxpm:0410 | tr '[:upper:]' '[:lower:]'
-          labels: |
-            org.opencontainers.image.source=https://github.com/${{ github.repository }}
-            org.opencontainers.image.description=HTTP Server
-            org.opencontainers.image.licenses=MIT
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      # ✅✅✅ 关键修复点：先生成“小写 tag”
+      - name: Generate lowercase image tag
+        run: |
+          IMAGE_TAG=$(echo ghcr.io/${GITHUB_REPOSITORY_OWNER}/yxpm:0410 | tr '[:upper:]' '[:lower:]')_
